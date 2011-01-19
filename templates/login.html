@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+<link rel="stylesheet" type="text/css" href="media/css/login.css" />
+{% block content %}
+
+  {% if form.errors %}
+    <p class="error">Sorry, that's not a valid username or password</p>
+  {% endif %}
+    
+  {% comment %}
+  <!-- <form action="" method="post">{% csrf_token %} -->
+  <!--   <label for="username">User name:</label> -->
+  <!--   <input type="text" name="username" value="" id="username"> -->
+  <!--   <label for="password">Password:</label> -->
+  <!--   <input type="password" name="password" value="" id="password"> -->
+
+  <!--   <input type="submit" value="login" /> -->
+  <!--   <input type="hidden" name="next" value="{{ next|escape }}" /> -->
+  <!-- </form> -->
+  {% endcomment %}
+  <BR>
+  <BR>
+  <form action="/accounts/external/mailru/login/" method="post">{% csrf_token %}
+    <label for="username">Войти с помощью учетной записи Mail.Ru(временно не работает): </label>
+    <input type="text" name="username" value="" id="username">@mail.ru&nbsp&nbsp&nbsp<input type="submit" value="Вход" />
+  </form>
+  <BR>
+  <BR>
+  <a href="/accounts/external/google/login/">Войти с помощью учетной записи Google</a>
+  
+{% endblock %}

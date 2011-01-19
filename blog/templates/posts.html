@@ -1,0 +1,16 @@
+<html>
+<head>
+  <title>From Russia to US</title>
+</head>
+
+<body>
+</body>
+<ul>
+  <div style="position: absolute; top:70px; left:20px; width:800px;">
+  {% for post in posts %}
+  <li><a href="post/{{post.id}}"> {{ post.title }}</a><BR>{{ post.preview|safe }} <a href="post/{{post.id}}">...</a></li>
+  <BR/>
+  {% endfor %}
+  </div>
+</ul>
+</html>

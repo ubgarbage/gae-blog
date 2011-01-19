@@ -1,0 +1,52 @@
+{% load comments i18n %}
+<html>
+<head>
+  <title>{{ post.title }}</title>
+</head>
+
+<body>
+</body>
+<h1>{{ post.title }}</h1>
+<BR/>
+<div style="position: absolute; top:70px; left:20px; width:800px;">
+{{ post.content|safe }}
+<BR/>
+<BR/>
+{% get_comment_count for post as comment_count %}
+Comments count: {{ comment_count }}
+<BR/>
+{% render_comment_list for post %}
+<BR/>
+
+{% get_comment_form for post as form %}
+<form action="{% comment_form_target %}" method="post">{% csrf_token %}
+  {% for field in form %}
+    {% if field.is_hidden %}
+      <div>{{ field }}</div>
+    {% else %}
+      {% if field.errors %}{{ field.errors }}{% endif %}
+      <p
+         {% if field.errors %} class="error"{% endif %}
+         {% ifequal field.name "honeypot" %} style="display:none;" 
+         {% else %}
+            {% ifequal field.name "name" %} style="display:none;"
+            {% else %}
+                {% ifequal field.name "url" %} style="display:none;"
+                {% else %}
+                    {% ifequal field.name "email" %} style="display:none;"
+                    {% endifequal %}
+                {% endifequal %}
+            {% endifequal %}
+         {% endifequal %}>
+        {{ field.label_tag }} {{ field }}
+
+      </p>
+    {% endif %}
+  {% endfor %}
+  <p class="submit">
+    <input type="submit" name="post" class="submit-post" value="{% trans "Post" %}" />
+    <input type="hidden" name="next" value="{{ redirect_after_comment }}" />
+  </p>
+</form>
+</div>
+</html>
