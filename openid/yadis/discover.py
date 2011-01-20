@@ -67,7 +67,7 @@ def discover(uri):
     @raises DiscoveryFailure: When the HTTP response does not have a 200 code.
     """
     result = DiscoveryResult(uri)
-    resp = fetchers.fetch(uri, headers={'Accept': YADIS_ACCEPT_HEADER})
+    resp = fetchers.fetch(uri, headers={'Accept': YADIS_ACCEPT_HEADER, 'Accept-Encoding': '' })
     if resp.status not in (200, 206):
         raise DiscoveryFailure(
             'HTTP Response status from identity URL host is not 200. '
@@ -83,7 +83,7 @@ def discover(uri):
     result.xrds_uri = whereIsYadis(resp)
 
     if result.xrds_uri and result.usedYadisLocation():
-        resp = fetchers.fetch(result.xrds_uri)
+        resp = fetchers.fetch(result.xrds_uri, headers={'Accept-Encoding': ''})
         if resp.status not in (200, 206):
             exc = DiscoveryFailure(
                 'HTTP Response status from Yadis host is not 200. '
