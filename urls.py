@@ -4,6 +4,7 @@ from django.contrib.auth.views import login, logout
 import views
 import blog.urls
 import external_auth.urls
+import testdebug.views
 
 admin.autodiscover()
 
@@ -14,6 +15,7 @@ urlpatterns = patterns( '',
                         ( '^accounts/logout/$', logout ),
                         ( '^accounts/external/', include(external_auth.urls) ),
                         ( r'^comments/', include('django.contrib.comments.urls') ),
-                        ( '^blog/', include(blog.urls) ), )
+                        ( '^blog/', include(blog.urls) ),
+                        ( '^testdebug/', testdebug.views.testdebug1 ), )
 
 
