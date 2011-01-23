@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 <link rel="stylesheet" type="text/css" href="static/css/login.css" />
 {% block content %}
-
+<div align="center">
   {% if form.errors %}
     <p class="error">Sorry, that's not a valid username or password</p>
   {% endif %}
@@ -19,11 +19,11 @@
   <BR>
   <BR>
   <form action="/accounts/external/mailru/login/" method="post">{% csrf_token %}
-    <label for="username">Войти с помощью учетной записи Mail.Ru(временно не работает): </label>
-    <input type="text" name="username" value="" id="username">@mail.ru&nbsp&nbsp&nbsp<input type="submit" value="Вход" />
+    <label for="username">Р’РѕР№С‚Рё СЃ РїРѕРјРѕС‰СЊСЋ СѓС‡РµС‚РЅРѕР№ Р·Р°РїРёСЃРё Mail.Ru(РІСЂРµРјРµРЅРЅРѕ РЅРµ СЂР°Р±РѕС‚Р°РµС‚): </label>
+    <input type="text" name="username" value="" id="username">@mail.ru&nbsp&nbsp&nbsp<input type="submit" value="Р’С‹С…РѕРґ" />
   </form>
   <BR>
   <BR>
-  <a href="/accounts/external/google/login/">Войти с помощью учетной записи Google</a>
-  
+  <a href="/accounts/external/google/login/">Р’РѕР№С‚Рё СЃ РїРѕРјРѕС‰СЊСЋ СѓС‡РµС‚РЅРѕР№ Р·Р°РїРёСЃРё Google</a>
+</div>  
 {% endblock %}
