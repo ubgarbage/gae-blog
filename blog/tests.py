@@ -4,6 +4,7 @@ from views import posts
 from django.test.client import Client
 from django.contrib.auth.models import User
 from django.contrib import auth
+from django.contrib.comments.models import Comment
 
 class PostTest(TestCase):
     def test_unicode_returns_post_title(self):
@@ -57,11 +58,11 @@ class PostsView(AuthViews, TestCase):
         response = self.get_response()
         self.assertIn( post1, response.context['posts'] )
         self.assertIn( post2, response.context['posts'] )
-        
        
 class PostView(AuthViews, TestCase):
 
     def setUp(self):
+        self.client = Client( HTTP_HOST='test_host' )
         self.set_url('/blog/post/')
         self.post = Post( title='test post', content='test post content' )
         self.post.save()

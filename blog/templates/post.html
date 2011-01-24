@@ -1,14 +1,11 @@
-{% load comments i18n %}
-<html>
-<head>
-  <title>{{ post.title }}</title>
-</head>
+{% extends "blog_base.html" %}
 
-<body>
-</body>
+{% load comments i18n %}
+
+
+{% block blog_content %}
 <h1>{{ post.title }}</h1>
 <BR/>
-<div style="position: absolute; top:70px; left:20px; width:800px;">
 {{ post.content|safe }}
 <BR/>
 <BR/>
@@ -48,5 +45,5 @@ Comments count: {{ comment_count }}
     <input type="hidden" name="next" value="{{ redirect_after_comment }}" />
   </p>
 </form>
-</div>
-</html>
+
+{% endblock %}
