@@ -2,7 +2,7 @@
 
 {% block header %}
 <div id="exit" align="right">
-  <a href="/logout/">Выход</a>
+  {{ user.username }}, <a href="/logout/">Выход</a>
 </div>
 {% endblock %}
 
