@@ -25,6 +25,12 @@
   </form>
   <BR>
   <BR>
+  <form action="/accounts/external/yandex/login/" method="post">{% csrf_token %}
+    <label for="username">Войти с помощью учетной записи Yandex: </label>
+    <input type="text" name="username" value="" id="username">@yandex.ru&nbsp&nbsp&nbsp<input type="submit" value="Вход" />
+  </form>
+  <BR>
+  <BR>
   <a href="/accounts/external/google/login/">Войти с помощью учетной записи Google</a>
   
 {% endblock %}
