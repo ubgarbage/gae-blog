@@ -15,18 +15,3 @@ class MailruUrlsTest(TestCase):
         self.assertEquals( 302, response.status_code )
         self.assertEquals( 'http://test_host/accounts/external/mailru/login/test_user', response['Location'] ) 
         
-
-
-class MailruIdTest(TestCase):
-    
-    def test_returns_user_id(self):
-        self.assertEquals( 'test_user', get_user_id( 'http://openid.mail.ru/mail/test_user' ) )
-
-    def test_throws_on_empty(self):
-        with self.assertRaises( Exception ):
-            get_user_id( 'http://openid.mail.ru/mail/' )
-
-    def test_throws_on_invalid(self):
-        with self.assertRaises( Exception ):
-            get_user_id( 'http://openid.asdfasdfasd/' )
-

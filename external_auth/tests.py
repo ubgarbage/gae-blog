@@ -6,6 +6,7 @@ from utils import *
 from google_login.tests import *
 from mailru_login.tests import *
 from models import AllowedUser
+from openid_auth import OpenIdAuthenticator
 
 
 class NoPassTest(TestCase):
@@ -67,3 +68,21 @@ class AuthTest(TestCase):
         request_mock = self.auth( 'test3', 'test@mail.ru' )
         self.assertFalse( login_mock.called )
         
+
+
+class OpenidGetUserTest(TestCase):
+    
+    def setUp(self):
+        self.openidauth = OpenIdAuthenticator( 'http://openid.lalala.ru/mail/', '/', 'lalala.ru' )
+
+    def test_returns_user_id(self):
+        self.assertEquals( 'test_user', self.openidauth.get_user_id( 'http://openid.lalala.ru/mail/test_user/' ) )
+
+    def test_throws_on_empty(self):
+        with self.assertRaises( Exception ):
+            self.openidauth.get_user_id( 'http://openid.mail.ru/mail/' )
+
+    def test_throws_on_invalid(self):
+        with self.assertRaises( Exception ):
+            self.openidauth.get_user_id( 'http://openid.asdfasdfasd/' )
+

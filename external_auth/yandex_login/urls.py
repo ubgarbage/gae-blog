@@ -1,8 +1,10 @@
 import django.conf.urls.defaults
-from views import yandex_login, check_and_auth
+from external_auth.openid_auth import OpenIdAuthenticator
+
+openid_authenticator = OpenIdAuthenticator( 'http://openid.yandex.ru/', '/', 'yandex.ru' )
 
 urlpatterns = django.conf.urls.defaults.patterns( '',
-                        ( 'login/(.*)$', yandex_login ),
-                        ( 'continue/$', check_and_auth )
+                        ( 'login/(.*)$', openid_authenticator.openid_login ),
+                        ( 'continue/$', openid_authenticator.check_and_auth )
                         )
 

@@ -10,6 +10,7 @@ __all__ = ['log', 'appendArgs', 'toBase64', 'fromBase64', 'autoSubmitHTML']
 import binascii
 import sys
 import urlparse
+import logging
 
 from urllib import urlencode
 
@@ -105,9 +106,8 @@ def log(message, level=0):
 
     @returns: Nothing.
     """
-
-    sys.stderr.write(message)
-    sys.stderr.write('\n')
+    
+    logging.info( message )
 
 def appendArgs(url, args):
     """Append query arguments to a HTTP(s) URL. If the URL already has

@@ -1,6 +1,6 @@
 from django.http import HttpResponse, HttpResponseRedirect
 from django.conf import settings
-from external_auth.utils import authenticate_without_pass
+from external_auth.auth_utils import authenticate_without_pass
 from utils import get_view_url
 import django
 import urllib2
