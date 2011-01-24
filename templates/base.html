@@ -18,12 +18,14 @@
   </head>
 
   <body>
-    <!-- <div id="header" align="center"> -->
-    <!--   <a id="logo" href="/">From Russia to US</a> -->
-    <!-- </div> -->
+    
+    <div id="header" align="center">
+      {% block header %}
+      {% endblock %}
+    </div>
 
-    <div class="columns">
-      <div id="content" class="column" >
+    <div class="columns" style="margin: 0px; max-width: 1200px; min-width: 600px; padding: 20px 70px 0px 0px;">
+      <div id="content" class="column" style="float: left; width: 60%;" >
         {% block content-header %}
           {% if error %}<div class="error">{{ error }}</div>{% endif %}
           {% if info %}<div class="info">{{ info }}</div>{% endif %}
@@ -37,7 +39,7 @@
         {% block content %}{% endblock %}
       </div>
 
-      <div id="sidebar" class="column">
+      <div id="sidebar" class="column" style="float: left; width: 20%; padding-left: 20%">
         {% block sidebar %}
         {% endblock %}
       </div>

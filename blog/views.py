@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect
 from django.core.context_processors import csrf
+from django.contrib.comments.models import Comment
 from utils import get_view_url
 from models import Post
 
@@ -13,7 +14,8 @@ def main(request):
 @login_required
 def posts(request):
     posts = Post.objects.all()
-    return render_to_response( 'posts.html', {'posts': posts} )
+    comments = Comment.objects.order_by('-submit_date')[0:10]
+    return render_to_response( 'posts.html', {'posts': posts, 'comments': comments} )
 
 @login_required
 def post(request, post_id):

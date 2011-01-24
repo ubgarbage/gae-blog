@@ -14,6 +14,9 @@ class Post(models.Model):
     class Meta:
         ordering = ['-create_time']
 
+    def get_absolute_url(self):
+        return '/blog/posts/post/' + str(self.id)
+
 @receiver(pre_save, sender=Post)
 def preview_generator(sender, instance, **kwargs):
     words = instance.content.split(' ')[:20]

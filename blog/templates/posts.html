@@ -1,10 +1,26 @@
 {% extends "blog_base.html" %}
 
+{% load comments i18n %}
+
+
 {% block blog_content %}
 <ul>
   {% for post in posts %}
   <li><a href="post/{{post.id}}"> {{ post.title }}</a><BR>{{ post.preview|safe }} <a href="post/{{post.id}}">...</a></li>
   <BR/>
+  {% endfor %}
+</ul>
+{% endblock %}
+
+{% block sidebar %}
+<h2>Последние комментарии:</h2>
+<ul>
+  {% for comment in comments %}
+  <li>
+    <a href="{% get_comment_permalink comment %}">{{ comment.comment }}<BR/></a>
+    {{ comment.submit_date }}<BR/>
+    {{ comment.user_name }}<BR/>
+  </li>
   {% endfor %}
 </ul>
 {% endblock %}
