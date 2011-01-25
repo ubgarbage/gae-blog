@@ -1,6 +1,18 @@
 {% extends "base.html" %}
 
 {% block header %}
+<script type="text/javascript">
+  function ToLocalFromUtc( utc ) {
+      date = new Date( utc );
+      time_str = date.toLocaleString();
+      gmt_pos = time_str.indexOf( "GMT" );
+      if( gmt_pos != 0 ) {
+          time_str = time_str.substring( 0, gmt_pos );
+      }
+      return time_str;
+  }
+</script>
+
 <div id="exit" align="right">
   {{ user.username }}, <a href="/logout/">Выход</a>
 </div>

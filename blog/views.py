@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render_to_response, redirect
 from django.core.context_processors import csrf
 from django.contrib.comments.models import Comment
+from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
 from utils import get_view_url
 from models import Post
@@ -20,6 +21,10 @@ def posts(request):
 
 @login_required
 def post(request, post_id):
+    ret = redirect_to_last_comment(request)
+    if None != ret:
+        return ret
+
     post_obj = Post.objects.get( id=post_id )
     context = RequestContext( request, 
                               { 'post':post_obj, 
@@ -28,3 +33,11 @@ def post(request, post_id):
     context.update( csrf(request) )
     return render_to_response( 'post.html', context )
 
+
+def redirect_to_last_comment(request):
+    if 'c' in request.GET:
+        try:
+            comment = Comment.objects.get(pk=request.GET['c'])
+            return redirect( comment.get_absolute_url() )
+        except (ObjectDoesNotExist, ValueError):
+            pass

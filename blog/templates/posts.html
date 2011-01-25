@@ -59,7 +59,10 @@
   {% for comment in comments %}
   <li>
     <a href="{% get_comment_permalink comment %}">{{ comment.comment }}<BR/></a>
-    {{ comment.submit_date }}<BR/>
+    <script type="text/javascript">
+      document.write( ToLocalFromUtc( {{ comment.submit_date|date:"U" }} * 1000 ) )
+    </script>
+    <BR/>
     {{ comment.user_name }}<BR/>
   </li>
   {% endfor %}

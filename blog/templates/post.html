@@ -4,14 +4,6 @@
 
 
 {% block blog_content %}
-<script type="text/javascript">
-  function ToLocalFromUtc( utc ) {
-  d = new Date()
-  offset = d.getTimezoneOffset() * 60 * 1000
-  date = new Date( utc - offset )
-  return date.toLocaleString()
-  }
-</script>
 
 
 <h1>{{ post.title }}</h1>
@@ -36,6 +28,8 @@ Comments count: {{ comment_count }}
     </dd>
 {% endfor %}
 <BR/>
+
+<a href="/">На главную</a>
 
 {% get_comment_form for post as form %}
 <form action="{% comment_form_target %}" method="post">{% csrf_token %}
