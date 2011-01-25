@@ -12,7 +12,16 @@
 {% get_comment_count for post as comment_count %}
 Comments count: {{ comment_count }}
 <BR/>
-{% render_comment_list for post %}
+
+{% get_comment_list for post as comment_list %}
+{% for comment in comment_list %}
+    <dt id="c{{ comment.id }}">
+        {{ comment.submit_date|date:"r" }} - {{ comment.name }}
+    </dt>
+    <dd>
+        <p>{{ comment.comment }}</p>
+    </dd>
+{% endfor %}
 <BR/>
 
 {% get_comment_form for post as form %}
