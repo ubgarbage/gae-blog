@@ -13,6 +13,47 @@
 {% endblock %}
 
 {% block sidebar %}
+<table border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center">
+      <script type="text/javascript"
+              src="http://www.worldtimeserver.com/clocks/embed.js">
+      </script>
+      <script type="text/javascript" language="JavaScript">
+        objUSNY=new Object;
+        objUSNY.wtsclock="wtsclock001.swf";
+        objUSNY.color="FF9900";
+        objUSNY.wtsid="US-NY";
+        objUSNY.width=150;
+        objUSNY.height=150;
+        objUSNY.wmode="transparent";
+        showClock(objUSNY);
+      </script>
+    </td>
+    <td align="center">
+      <script type="text/javascript"
+              src="http://www.worldtimeserver.com/clocks/embed.js">
+      </script>
+      <script type="text/javascript" language="JavaScript">
+        objUSNY=new Object;
+        objUSNY.wtsclock="wtsclock001.swf";
+        objUSNY.color="FF9900";
+        objUSNY.wtsid="RU-MOW";
+        objUSNY.width=150;
+        objUSNY.height=150;
+        objUSNY.wmode="transparent";
+        showClock(objUSNY);
+      </script>
+    </td>
+
+  </tr>
+  <tr>
+    <td align="center"><h2>Нью-Йорк</h2></td>
+    <td align="center"><h2>Москва</h2></td>
+  </tr>
+</table>
+
+
 <h2>Последние комментарии:</h2>
 <ul>
   {% for comment in comments %}
