@@ -25,5 +25,10 @@ handlers:
   upload: static/favicon.ico
   mime_type: image/x-icon
 
+- url: /robots.txt
+  static_files: media/robots.txt
+  upload: static/robots.txt
+  mime_time: text/plain
+
 - url: /.*
   script: djangoappengine/main/main.py
