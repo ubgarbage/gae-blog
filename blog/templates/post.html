@@ -4,6 +4,16 @@
 
 
 {% block blog_content %}
+<script type="text/javascript">
+  function ToLocalFromUtc( utc ) {
+  d = new Date()
+  offset = d.getTimezoneOffset() * 60 * 1000
+  date = new Date( utc - offset )
+  return date.toLocaleString()
+  }
+</script>
+
+
 <h1>{{ post.title }}</h1>
 <BR/>
 {{ post.content|safe }}
@@ -16,7 +26,10 @@ Comments count: {{ comment_count }}
 {% get_comment_list for post as comment_list %}
 {% for comment in comment_list %}
     <dt id="c{{ comment.id }}">
-        {{ comment.submit_date|date:"r" }} - {{ comment.name }}
+      <script type="text/javascript">
+        document.write( ToLocalFromUtc( {{ comment.submit_date|date:"U" }} * 1000 ) )
+      </script>
+      - {{ comment.name }}
     </dt>
     <dd>
         <p>{{ comment.comment }}</p>
