@@ -377,10 +377,10 @@ class User(models.Model):
         return self._profile_cache
 
     def _get_message_set(self):
-        import warnings
-        warnings.warn('The user messaging API is deprecated. Please update'
-                      ' your code to use the new messages framework.',
-                      category=DeprecationWarning)
+        # import warnings
+        # warnings.warn('The user messaging API is deprecated. Please update'
+        #               ' your code to use the new messages framework.',
+        #               category=DeprecationWarning)
         return self._message_set
     message_set = property(_get_message_set)
 
