@@ -1,5 +1,5 @@
 application: simpleblogengine
-version: 2
+version: 4
 runtime: python
 api_version: 1
 
@@ -28,7 +28,7 @@ handlers:
 - url: /robots.txt
   static_files: media/robots.txt
   upload: static/robots.txt
-  mime_time: text/plain
+  mime_type: text/plain
 
 - url: /.*
   script: djangoappengine/main/main.py
