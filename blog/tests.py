@@ -1,10 +1,10 @@
+from django.test.client import Client
 from django.test import TestCase
 from models import Post
 from views import posts
-from django.test.client import Client
 from django.contrib.auth.models import User
-from django.contrib import auth
 from django.contrib.comments.models import Comment
+from test_utils import AuthViews
 
 class PostTest(TestCase):
     def test_unicode_returns_post_title(self):
@@ -16,36 +16,15 @@ class PostTest(TestCase):
         post.save()
         self.assertEquals( post.preview, 'word1 word2' )
 
-class AuthViews():
-    
-    def set_url(self, url):
-        self.url = url
 
-    def set_url_params( self, url_params ):
-        self.url = self.url + url_params
+class BlogViews(AuthViews):
 
-    def login(self):
-        db_user = User.objects.create_user( username="test", email="test@test.com", password="test" )
-        db_user.save()
-        self.client.login( username='test', password='test' )
-        
-    def get_anonym_response( self ):
-        return self.client.get( self.url )
-
-    def get_response( self ):
-        self.login()
-        return self.client.get( self.url )
-
-    def test_redirect_for_nonauth_users(self):
-        response = self.get_anonym_response()
-        self.assertEquals( response.status_code, 302 )
-        
     def test_ok_for_auth_users(self):
         response = self.get_response()
         self.assertEquals( response.status_code, 200 )
-        
 
-class PostsView(AuthViews, TestCase):
+
+class PostsView(BlogViews, TestCase):
 
     def setUp(self):
         self.set_url('/blog/posts/')
@@ -59,7 +38,7 @@ class PostsView(AuthViews, TestCase):
         self.assertIn( post1, response.context['posts'] )
         self.assertIn( post2, response.context['posts'] )
        
-class PostView(AuthViews, TestCase):
+class PostView(BlogViews, TestCase):
 
     def setUp(self):
         self.client = Client( HTTP_HOST='test_host' )

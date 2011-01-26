@@ -7,3 +7,4 @@ def main(request):
 def main_logout(request):
     logout(request)
     return HttpResponseRedirect( '/' )
+

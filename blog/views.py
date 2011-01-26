@@ -1,6 +1,6 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render_to_response, redirect
+from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.context_processors import csrf
 from django.contrib.comments.models import Comment
 from django.core.exceptions import ObjectDoesNotExist
@@ -25,7 +25,7 @@ def post(request, post_id):
     if None != ret:
         return ret
 
-    post_obj = Post.objects.get( id=post_id )
+    post_obj = get_object_or_404( Post, id=post_id )
     context = RequestContext( request, 
                               { 'post':post_obj, 
                                 'username':request.user.username, 

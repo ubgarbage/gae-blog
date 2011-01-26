@@ -17,15 +17,20 @@ Comments count: {{ comment_count }}
 
 {% get_comment_list for post as comment_list %}
 {% for comment in comment_list %}
+{% if not comment.is_removed %}
     <dt id="c{{ comment.id }}">
       <script type="text/javascript">
         document.write( ToLocalFromUtc( {{ comment.submit_date|date:"U" }} * 1000 ) )
       </script>
       - {{ comment.name }}
+      {% if comment.user == user or user.is_staff %}
+      <a href="/comment/delete/{{ comment.id }}/?next={{post.get_absolute_url}}"><img src="/static/delete-icon.png"/></a>
+      {% endif %}
     </dt>
     <dd>
         <p>{{ comment.comment }}</p>
     </dd>
+{% endif %}
 {% endfor %}
 <BR/>
 

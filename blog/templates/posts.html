@@ -57,6 +57,7 @@
 <h2>Последние комментарии:</h2>
 <ul>
   {% for comment in comments %}
+  {% if not comment.is_removed %}
   <li>
     <a href="{% get_comment_permalink comment %}">{{ comment.comment }}<BR/></a>
     <script type="text/javascript">
@@ -65,6 +66,7 @@
     <BR/>
     {{ comment.user_name }}<BR/>
   </li>
+  {% endif %}
   {% endfor %}
 </ul>
 {% endblock %}

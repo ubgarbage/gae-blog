@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'djangotoolbox',
     'blog',
     'external_auth',
+    'comment',
     'testdebug',
 )
 
