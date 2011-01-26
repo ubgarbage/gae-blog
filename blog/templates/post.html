@@ -11,9 +11,16 @@
 {{ post.content|safe }}
 <BR/>
 <BR/>
-{% get_comment_count for post as comment_count %}
-Comments count: {{ comment_count }}
-<BR/>
+<div align="right">
+  <font color="gray">
+    {{ post.author }}<BR/>
+    {{ post.create_time }}<BR/>
+
+    {% get_comment_count for post as comment_count %}
+    прокомментирован&nbsp;{{ comment_count }}&nbsp;раз
+  </font>
+  <BR/>
+</div>
 
 {% get_comment_list for post as comment_list %}
 {% for comment in comment_list %}

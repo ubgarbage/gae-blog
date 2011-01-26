@@ -1,9 +1,22 @@
 {% extends "blog_base.html" %}
 
+{% load comments i18n %}
+
 {% block blog_content %}
 <ul>
   {% for post in posts %}
-  <li><a href="post/{{post.id}}"> {{ post.title }}</a><BR>{{ post.preview|safe }} <a href="post/{{post.id}}">...</a></li>
+  {% get_comment_count for post as comment_count %}
+  <li><a href="post/{{post.id}}"> {{ post.title }}</a><BR/>
+    {{ post.preview|safe }} <a href="post/{{post.id}}">...</a></li>
+  <div align="right">
+    <font color="gray">
+      {{ post.author }}<BR/>
+      {{ post.create_time }}<BR/>
+      прокомментирован&nbsp;{{ comment_count }}&nbsp;раз
+    </font>
+    <BR/>
+  </div>
+
   <BR/>
   {% endfor %}
 </ul>
