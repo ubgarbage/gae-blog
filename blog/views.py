@@ -15,9 +15,13 @@ def main(request):
 @login_required
 def posts(request):
     posts = Post.objects.all()
-    comments = Comment.objects.order_by('-submit_date')[0:10]
-    context = RequestContext( request, {'posts': posts, 'comments': comments} )
+    context = RequestContext( request, {'posts': posts} )
+    add_comments( context )
     return render_to_response( 'posts.html', context )
+
+def add_comments( context ):
+    comments = Comment.objects.order_by('-submit_date')[0:10]
+    context['comments'] = comments
 
 @login_required
 def post(request, post_id):
@@ -28,9 +32,9 @@ def post(request, post_id):
     post_obj = get_object_or_404( Post, id=post_id )
     context = RequestContext( request, 
                               { 'post':post_obj, 
-                                'username':request.user.username, 
                                 'redirect_after_comment':get_view_url(request, post, [post_id]) } )
     context.update( csrf(request) )
+    add_comments( context )
     return render_to_response( 'post.html', context )
 
 

@@ -1,72 +1,10 @@
 {% extends "blog_base.html" %}
 
-{% load comments i18n %}
-
-
 {% block blog_content %}
 <ul>
   {% for post in posts %}
   <li><a href="post/{{post.id}}"> {{ post.title }}</a><BR>{{ post.preview|safe }} <a href="post/{{post.id}}">...</a></li>
   <BR/>
-  {% endfor %}
-</ul>
-{% endblock %}
-
-{% block sidebar %}
-<table border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td align="center">
-      <script type="text/javascript"
-              src="http://www.worldtimeserver.com/clocks/embed.js">
-      </script>
-      <script type="text/javascript" language="JavaScript">
-        objUSNY=new Object;
-        objUSNY.wtsclock="wtsclock001.swf";
-        objUSNY.color="FF9900";
-        objUSNY.wtsid="US-NY";
-        objUSNY.width=150;
-        objUSNY.height=150;
-        objUSNY.wmode="transparent";
-        showClock(objUSNY);
-      </script>
-    </td>
-    <td align="center">
-      <script type="text/javascript"
-              src="http://www.worldtimeserver.com/clocks/embed.js">
-      </script>
-      <script type="text/javascript" language="JavaScript">
-        objUSNY=new Object;
-        objUSNY.wtsclock="wtsclock001.swf";
-        objUSNY.color="FF9900";
-        objUSNY.wtsid="RU-MOW";
-        objUSNY.width=150;
-        objUSNY.height=150;
-        objUSNY.wmode="transparent";
-        showClock(objUSNY);
-      </script>
-    </td>
-
-  </tr>
-  <tr>
-    <td align="center"><h2>Нью-Йорк</h2></td>
-    <td align="center"><h2>Москва</h2></td>
-  </tr>
-</table>
-
-
-<h2>Последние комментарии:</h2>
-<ul>
-  {% for comment in comments %}
-  {% if not comment.is_removed %}
-  <li>
-    <a href="{% get_comment_permalink comment %}">{{ comment.comment }}<BR/></a>
-    <script type="text/javascript">
-      document.write( ToLocalFromUtc( {{ comment.submit_date|date:"U" }} * 1000 ) )
-    </script>
-    <BR/>
-    {{ comment.user_name }}<BR/>
-  </li>
-  {% endif %}
   {% endfor %}
 </ul>
 {% endblock %}
