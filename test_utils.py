@@ -33,7 +33,12 @@ class AuthViews():
         self.login( self.staff_user )
         return self.client.get( self.url + self.url_params )
 
-    def test_redirect_for_nonauth_users(self):
+    def get_response_check_ok( self ):
+        response = self.get_response()
+        self.assertEquals( 200, response.status_code )
+        return response
+
+    def test_redirect_for_nonauth_users( self ):
         response = self.get_anonym_response()
         self.assertEquals( response.status_code, 302 )
         self.assertIn( 'accounts/login', response['Location'] )

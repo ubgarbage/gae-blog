@@ -3,6 +3,8 @@ import views
 
 urlpatterns = django.conf.urls.defaults.patterns( '',
                         ( '^$', views.main ),
-                        ( 'posts/$', views.posts ),
-                        ( 'post/(\d+)/$', views.post ), )
+                        ( '^subscribe/$', views.subscribe ),
+                        ( '^unsubscribe/$', views.unsubscribe ),
+                        ( '^posts/$', views.posts ),
+                        ( '^post/(\d+)/$', views.post ), )
 

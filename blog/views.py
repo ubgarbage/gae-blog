@@ -6,7 +6,8 @@ from django.contrib.comments.models import Comment
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
 from utils import get_view_url
-from models import Post
+from models import Post, Subscriber
+import logging
 
 @login_required
 def main(request):
@@ -45,3 +46,24 @@ def redirect_to_last_comment(request):
             return redirect( comment.get_absolute_url() )
         except (ObjectDoesNotExist, ValueError):
             pass
+
+@login_required
+def subscribe(request):
+    try:
+        subscriber = Subscriber.objects.get( user=request.user )
+        return HttpResponse( 'Already subscribed' )
+    except (ObjectDoesNotExist, ValueError):
+        logging.info( 'Subscribing ' + request.user.username )
+        subscriber = Subscriber.objects.create( user=request.user )
+        subscriber.save()
+        return HttpResponse( 'OK' )
+
+@login_required
+def unsubscribe(request):
+    try:
+        subscriber = Subscriber.objects.get( user=request.user )
+        logging.info( 'Unsubscribing ' + request.user.username )
+        subscriber.delete()
+        return HttpResponse( 'OK' )
+    except (ObjectDoesNotExist, ValueError):
+        return HttpResponse( 'Not subscribed' )

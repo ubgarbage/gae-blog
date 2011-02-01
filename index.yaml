@@ -26,6 +26,11 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: blog_subscriber
+  properties:
+  - name: __key__
+    direction: desc
+
 - kind: books_author
   properties:
   - name: __key__

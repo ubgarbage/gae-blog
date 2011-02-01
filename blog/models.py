@@ -23,3 +23,9 @@ class Post(models.Model):
 def preview_generator(sender, instance, **kwargs):
     words = instance.content.split(' ')[:20]
     instance.preview = ' '.join(words)
+
+class Subscriber(models.Model):
+    user = models.ForeignKey(User)
+
+    def __unicode__(self):
+        return self.user.username
