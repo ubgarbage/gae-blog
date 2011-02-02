@@ -25,7 +25,7 @@ def preview_generator(sender, instance, **kwargs):
     instance.preview = ' '.join(words)
 
 class Subscriber(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, unique=True)
 
     def __unicode__(self):
         return self.user.username
