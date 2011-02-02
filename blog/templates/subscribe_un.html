@@ -1,0 +1,12 @@
+{% extends "blog_base.html" %}
+
+{% load comments i18n %}
+
+
+{% block blog_content %}
+
+<div align='center'>
+  Вы успешно отписались. Уведомления больше не будут приходить на адрес:{{ user.email }}
+</div>
+
+{% endblock %}

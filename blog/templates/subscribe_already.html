@@ -1,0 +1,11 @@
+{% extends "blog_base.html" %}
+
+{% load comments i18n %}
+
+
+{% block blog_content %}
+
+<div align='center'>
+  Вы уже подписаны на уведомления. Уведомления отправляются на адрес: {{user.email}}
+</div>
+{% endblock %}

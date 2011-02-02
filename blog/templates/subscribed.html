@@ -1,0 +1,12 @@
+{% extends "blog_base.html" %}
+
+{% load comments i18n %}
+
+
+{% block blog_content %}
+
+<div align='center'>
+  Уведомления будут приходить на адрес: {{ user.email }}
+</div>
+
+{% endblock %}

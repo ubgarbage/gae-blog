@@ -23,6 +23,7 @@ def posts(request):
 def add_comments( context ):
     comments = Comment.objects.order_by('-submit_date')[0:10]
     context['comments'] = comments
+    return context
 
 @login_required
 def post(request, post_id):
@@ -51,12 +52,12 @@ def redirect_to_last_comment(request):
 def subscribe(request):
     try:
         subscriber = Subscriber.objects.get( user=request.user )
-        return HttpResponse( 'Already subscribed' )
+        return render_to_response( 'subscribe_already.html', add_comments(RequestContext(request)) )
     except (ObjectDoesNotExist, ValueError):
         logging.info( 'Subscribing ' + request.user.username )
         subscriber = Subscriber.objects.create( user=request.user )
         subscriber.save()
-        return HttpResponse( 'OK' )
+        return render_to_response( 'subscribed.html', add_comments(RequestContext(request)) )
 
 @login_required
 def unsubscribe(request):
@@ -64,6 +65,6 @@ def unsubscribe(request):
         subscriber = Subscriber.objects.get( user=request.user )
         logging.info( 'Unsubscribing ' + request.user.username )
         subscriber.delete()
-        return HttpResponse( 'OK' )
+        return render_to_response( 'subscribe_un.html', add_comments(RequestContext(request)) )
     except (ObjectDoesNotExist, ValueError):
-        return HttpResponse( 'Not subscribed' )
+        return render_to_response( 'subscribe_un_notsubscribed.html', add_comments(RequestContext(request)) )
