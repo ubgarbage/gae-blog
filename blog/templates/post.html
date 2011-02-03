@@ -5,6 +5,9 @@
 
 {% block blog_content %}
 
+<div align="center">
+  <a href="/">На главную</a>
+</div>  
 
 <h1>{{ post.title }}</h1>
 <BR/>
@@ -23,6 +26,11 @@
 </div>
 
 {% get_comment_list for post as comment_list %}
+
+{% if not comment_list|length_is:"0" %}
+<a href="/">На главную</a><BR/><BR/>
+{% endif %}
+
 {% for comment in comment_list %}
 {% if not comment.is_removed %}
     <dt id="c{{ comment.id }}">
