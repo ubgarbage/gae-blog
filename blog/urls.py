@@ -6,5 +6,5 @@ urlpatterns = django.conf.urls.defaults.patterns( '',
                         ( '^subscribe/$', views.subscribe ),
                         ( '^unsubscribe/$', views.unsubscribe ),
                         ( '^posts/$', views.posts ),
-                        ( '^post/(\d+)/$', views.post ), )
+                        ( '^posts/post/(\d+)/$', views.post ), )
 
