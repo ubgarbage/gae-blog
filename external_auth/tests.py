@@ -16,7 +16,7 @@ class NoPassTest(TestCase):
         AllowedUser.objects.create( username='test' )
         AllowedUser.objects.create( username='test2' )
     
-    def test_return_none_on_pass( self ):
+    def test_return_none_if_password( self ):
         self.assertEquals( None, self.back.authenticate( 'test', 'test' ) )
 
     def test_create_user_ifdoesnt_exist_on_nopass( self ):
@@ -32,6 +32,10 @@ class NoPassTest(TestCase):
 
     def test_return_none_on_not_allowed( self ):
         self.assertEquals( None, self.back.authenticate( 'test3', 'test' ) )
+
+    def test_case_insensitive_check( self ):
+        user_auth = self.back.authenticate( 'Test', '', nopass = True )
+        self.assertEquals( 'test', user_auth.username )
 
 @patch( 'django.contrib.auth.models.User.objects.create_user' )
 @patch( 'django.contrib.auth.login' )

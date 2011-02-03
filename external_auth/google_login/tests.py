@@ -57,8 +57,7 @@ class GetUserNameTest(TestCase):
         self.assertEquals( email, 'test@mail.com' )
 
     def test_raises_on_invalid_email(self):
-        with self.assertRaises( ValueError ):
-            self.get( 'testmail.com' )
+        self.assertRaises( ValueError, self.get, 'testmail.com' )
 
         
 class UrlsTest(TestCase):

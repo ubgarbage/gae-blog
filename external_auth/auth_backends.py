@@ -24,7 +24,8 @@ class NoPassBackend( ModelBackend ):
 
     def authenticate( self, username=None, password=None, nopass=False, email='' ):
         logging.info( str(username) + ' requested auth with email: ' + str(email) )
-        if nopass:
+        if nopass and username != None:
+            username = username.lower()
             if self.check_if_allowed( username ):
                 return self.get_or_create_user( username, email )
             else:
