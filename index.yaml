@@ -26,6 +26,12 @@ indexes:
   - name: __key__
     direction: desc
 
+- kind: blog_post
+  properties:
+  - name: title
+  - name: create_time
+    direction: desc
+
 - kind: blog_subscriber
   properties:
   - name: __key__
