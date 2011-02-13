@@ -16,6 +16,11 @@
 </script>
 
 <div id="exit" align="right">
+  {% if is_subscribed %}
+     <a href="/blog/unsubscribe/">Отписаться от уведомлений, </a>
+  {% else %}
+     <a href="/blog/subscribe/">Подписаться на уведомления, </a>
+  {% endif %}
   {{ user.username }}, <a href="/logout/">Выход</a>
 </div>
 {% endblock %}

@@ -30,8 +30,10 @@ class BlogBaseView:
         self.Request = request
         self.Context = RequestContext( request )
         self.User = self.Request.user
+
+    def update_context(self):
         self.add_comments( self.Context )
-        self.add_is_subscriber_flag()
+        self.add_is_subscriber_flag()        
 
     def add_comments(self, context):
         comments = Comment.objects.order_by('-submit_date')[0:10]
@@ -39,7 +41,11 @@ class BlogBaseView:
         return context
 
     def add_is_subscriber_flag(self):
-        self.Context['is_subscriber']=is_subscriber(self.User)
+        self.Context['is_subscribed']=is_subscriber(self.User)
+
+    def render_template(self, template_name):
+        self.update_context()
+        return render_to_response( template_name, self.Context )
 
 class PostView(BlogBaseView):
     
@@ -52,7 +58,7 @@ class PostView(BlogBaseView):
         self.Context['post'] = post_obj;
         self.Context['redirect_after_comment'] = get_view_url(self.Request, PostView, [post_id])
         self.Context.update( csrf(self.Request) )
-        return render_to_response( 'post.html', self.Context )
+        return self.render_template( 'post.html' )
 
     def redirect_to_last_comment(self, request):
         if 'c' in request.GET:
@@ -67,19 +73,19 @@ class PostsView(BlogBaseView):
     def render(self, *args):
         posts = Post.objects.all()
         self.Context['posts'] = posts
-        return render_to_response( 'posts.html', self.Context )
+        return self.render_template( 'posts.html' )
 
 class SubscribeView(BlogBaseView):
 
     def render(self, *args):
         if is_subscriber(self.User):
             subscriber = Subscriber.objects.get( user=self.User )
-            return render_to_response( 'subscribe_already.html', self.Context )
+            return self.render_template( 'subscribe_already.html' )
         else:
             logging.info( 'Subscribing ' + self.User.username )
             subscriber = Subscriber.objects.create( user=self.User )
             subscriber.save()
-        return render_to_response( 'subscribed.html', self.Context )
+        return self.render_template( 'subscribed.html' )
 
 
 class UnsubscribeView(BlogBaseView):
@@ -89,10 +95,9 @@ class UnsubscribeView(BlogBaseView):
             subscriber = Subscriber.objects.get( user=self.User )
             logging.info( 'Unsubscribing ' + self.User.username )
             subscriber.delete()
-            return render_to_response( 'subscribe_un.html', self.Context )
+            return self.render_template( 'subscribe_un.html' )
         else:
-            return render_to_response( 'subscribe_un_notsubscribed.html', self.Context )
-
+            return self.render_template( 'subscribe_un_notsubscribed.html' )
 
 def is_subscriber(user):
     return False if 0 == len(Subscriber.objects.filter( user=user )) else True
