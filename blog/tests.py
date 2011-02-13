@@ -1,7 +1,6 @@
 from django.test.client import Client
 from django.test import TestCase
 from models import Post, Subscriber
-from views import posts
 from django.contrib.auth.models import User
 from django.contrib.comments.models import Comment
 from test_utils import AuthViews
@@ -27,7 +26,7 @@ class BlogViews(AuthViews):
     def test_ok_for_auth_users(self):
         self.get_response_check_ok()
 
-class PostsView(BlogViews, TestCase):
+class PostsViewTest(BlogViews, TestCase):
 
     def setUp(self):
         self.set_url('/blog/posts/')
@@ -41,11 +40,11 @@ class PostsView(BlogViews, TestCase):
         self.assertIn( post1, response.context['posts'] )
         self.assertIn( post2, response.context['posts'] )
        
-class PostView(BlogViews, TestCase):
+class PostViewTest(BlogViews, TestCase):
 
     def setUp(self):
         self.client = Client( HTTP_HOST='test_host' )
-        self.set_url('/blog/post/')
+        self.set_url('/blog/posts/post/')
         self.post = Post( title='test post', content='test post content', author=self.user )
         self.post.save()
         self.set_url_params( str(self.post.id) + '/' )
@@ -59,7 +58,7 @@ class PostView(BlogViews, TestCase):
         response = self.get_response()
         self.assertEquals( 404, response.status_code )
 
-class SubscribeView(BlogViews, TestCase):
+class SubscribeViewTest(BlogViews, TestCase):
     
     def setUp(self):
         self.set_url('/blog/subscribe/')
@@ -74,7 +73,7 @@ class SubscribeView(BlogViews, TestCase):
         response = self.get_response_check_ok()
         self.assertEquals( 1, len(Subscriber.objects.all()) )
 
-class UnsubscribeView(BlogViews, TestCase):
+class UnsubscribeViewTest(BlogViews, TestCase):
     
     def setUp(self):
         self.set_url('/blog/unsubscribe/')

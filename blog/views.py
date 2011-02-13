@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.shortcuts import render_to_response, redirect, get_object_or_404
 from django.core.context_processors import csrf
 from django.contrib.comments.models import Comment
@@ -13,58 +14,85 @@ import logging
 def main(request):
     return redirect( 'posts/' )
 
-@login_required
-def posts(request):
-    posts = Post.objects.all()
-    context = RequestContext( request, {'posts': posts} )
-    add_comments( context )
-    return render_to_response( 'posts.html', context )
 
-def add_comments( context ):
-    comments = Comment.objects.order_by('-submit_date')[0:10]
-    context['comments'] = comments
-    return context
+class ViewCreator(type):
 
-@login_required
-def post(request, post_id):
-    ret = redirect_to_last_comment(request)
-    if None != ret:
-        return ret
+    @method_decorator(login_required)
+    def __call__(cls, request, *args, **kwargs):
+        instance = super(ViewCreator, cls).__call__(request)
+        return instance.render(*args, **kwargs)
 
-    post_obj = get_object_or_404( Post, id=post_id )
-    context = RequestContext( request, 
-                              { 'post':post_obj, 
-                                'redirect_after_comment':get_view_url(request, post, [post_id]) } )
-    context.update( csrf(request) )
-    add_comments( context )
-    return render_to_response( 'post.html', context )
+class BlogBaseView:
+    
+    __metaclass__ = ViewCreator
+
+    def __init__(self, request):
+        self.Request = request
+        self.Context = RequestContext( request )
+        self.User = self.Request.user
+        self.add_comments( self.Context )
+        self.add_is_subscriber_flag()
+
+    def add_comments(self, context):
+        comments = Comment.objects.order_by('-submit_date')[0:10]
+        context['comments'] = comments
+        return context
+
+    def add_is_subscriber_flag(self):
+        self.Context['is_subscriber']=is_subscriber(self.User)
+
+class PostView(BlogBaseView):
+    
+    def render(self, post_id, *args):
+        ret = self.redirect_to_last_comment(self.Request)
+        if None != ret:
+            return ret
+
+        post_obj = get_object_or_404( Post, id=post_id )
+        self.Context['post'] = post_obj;
+        self.Context['redirect_after_comment'] = get_view_url(self.Request, PostView, [post_id])
+        self.Context.update( csrf(self.Request) )
+        return render_to_response( 'post.html', self.Context )
+
+    def redirect_to_last_comment(self, request):
+        if 'c' in request.GET:
+            try:
+                comment = Comment.objects.get(pk=request.GET['c'])
+                return redirect( comment.get_absolute_url() )
+            except (ObjectDoesNotExist, ValueError):
+                pass
+
+class PostsView(BlogBaseView):
+
+    def render(self, *args):
+        posts = Post.objects.all()
+        self.Context['posts'] = posts
+        return render_to_response( 'posts.html', self.Context )
+
+class SubscribeView(BlogBaseView):
+
+    def render(self, *args):
+        if is_subscriber(self.User):
+            subscriber = Subscriber.objects.get( user=self.User )
+            return render_to_response( 'subscribe_already.html', self.Context )
+        else:
+            logging.info( 'Subscribing ' + self.User.username )
+            subscriber = Subscriber.objects.create( user=self.User )
+            subscriber.save()
+        return render_to_response( 'subscribed.html', self.Context )
 
 
-def redirect_to_last_comment(request):
-    if 'c' in request.GET:
-        try:
-            comment = Comment.objects.get(pk=request.GET['c'])
-            return redirect( comment.get_absolute_url() )
-        except (ObjectDoesNotExist, ValueError):
-            pass
+class UnsubscribeView(BlogBaseView):
 
-@login_required
-def subscribe(request):
-    try:
-        subscriber = Subscriber.objects.get( user=request.user )
-        return render_to_response( 'subscribe_already.html', add_comments(RequestContext(request)) )
-    except (ObjectDoesNotExist, ValueError):
-        logging.info( 'Subscribing ' + request.user.username )
-        subscriber = Subscriber.objects.create( user=request.user )
-        subscriber.save()
-        return render_to_response( 'subscribed.html', add_comments(RequestContext(request)) )
+    def render(self, *args):
+        if is_subscriber(self.User):
+            subscriber = Subscriber.objects.get( user=self.User )
+            logging.info( 'Unsubscribing ' + self.User.username )
+            subscriber.delete()
+            return render_to_response( 'subscribe_un.html', self.Context )
+        else:
+            return render_to_response( 'subscribe_un_notsubscribed.html', self.Context )
 
-@login_required
-def unsubscribe(request):
-    try:
-        subscriber = Subscriber.objects.get( user=request.user )
-        logging.info( 'Unsubscribing ' + request.user.username )
-        subscriber.delete()
-        return render_to_response( 'subscribe_un.html', add_comments(RequestContext(request)) )
-    except (ObjectDoesNotExist, ValueError):
-        return render_to_response( 'subscribe_un_notsubscribed.html', add_comments(RequestContext(request)) )
+
+def is_subscriber(user):
+    return False if 0 == len(Subscriber.objects.filter( user=user )) else True
