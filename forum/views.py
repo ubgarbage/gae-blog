@@ -17,10 +17,10 @@ from settings import MEDIA_URL
 from models import *
 
 
-class ProfileForm(ModelForm):
-    class Meta:
-        model = UserProfile
-        exclude = ["posts", "user"]
+# class ProfileForm(ModelForm):
+#     class Meta:
+#         model = UserProfile
+#         exclude = ["posts", "user"]
 
 def mk_paginator(request, items, num_items):
     """Create and return a paginator."""
@@ -50,28 +50,28 @@ def thread_view(request, pk):
     return render_to_response("thread.html", add_csrf(request, posts=posts, pk=pk, title=t.title,
                                                       media_url=MEDIA_URL))
 
-@login_required
-def profile(request, pk):
-    """Edit user profile."""
-    profile = UserProfile.objects.get(user=pk)
-    img = None
+# @login_required
+# def profile(request, pk):
+#     """Edit user profile."""
+#     profile = UserProfile.objects.get(user=pk)
+#     img = None
 
-    if request.method == "POST":
-        pf = ProfileForm(request.POST, request.FILES, instance=profile)
-        if pf.is_valid():
-            pf.save()
-            # resize and save image under same filename
-            # imfn = pjoin(MEDIA_ROOT, profile.avatar.name)
-            # TODO
-            # im = PImage.open(imfn)
-            # im.thumbnail((160,160), PImage.ANTIALIAS)
-            # im.save(imfn, "JPEG")
-    else:
-        pf = ProfileForm(instance=profile)
+#     if request.method == "POST":
+#         pf = ProfileForm(request.POST, request.FILES, instance=profile)
+#         if pf.is_valid():
+#             pf.save()
+#             # resize and save image under same filename
+#             # imfn = pjoin(MEDIA_ROOT, profile.avatar.name)
+#             # TODO
+#             # im = PImage.open(imfn)
+#             # im.thumbnail((160,160), PImage.ANTIALIAS)
+#             # im.save(imfn, "JPEG")
+#     else:
+#         pf = ProfileForm(instance=profile)
 
-    if profile.avatar:
-        img = "/media/" + profile.avatar.name
-    return render_to_response("profile.html", add_csrf(request, pf=pf, img=img))
+#     if profile.avatar:
+#         img = "/media/" + profile.avatar.name
+#     return render_to_response("profile.html", add_csrf(request, pf=pf, img=img))
 
 @login_required
 def post(request, ptype, pk):
