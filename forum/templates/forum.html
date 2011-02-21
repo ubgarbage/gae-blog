@@ -28,7 +28,7 @@
             <tr>
                 <td>Темы</td>
                 <td>Ответы</td>
-                <td>Последний пост</td>
+                <td>Последнее сообщение</td>
                 <td></td>
             </tr>
 
@@ -40,7 +40,7 @@
                     </div></td>
                 <td {% if forloop.last %}class="last"{% endif %}>{{ thread.num_replies }}</td>
                 <td {% if forloop.last %}class="last"{% endif %}>
-                    {{ thread.last_post.short|linebreaksbr }}</td>
+                  {{ thread.last_post.short|linebreaksbr }}</td>
                 <td {% if forloop.last %}class="last"{% endif %}>
                     <a class="button" href="{% url forum.views.thread_view thread.pk %}">ПРОСМОТР</a>
                 </td>
