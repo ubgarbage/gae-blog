@@ -58,6 +58,7 @@ class PostView(BlogBaseView):
         self.Context['post'] = post_obj;
         self.Context['redirect_after_comment'] = get_view_url(self.Request, PostView, [post_id])
         self.Context.update( csrf(self.Request) )
+        logging.info( "User " + self.Request.user.username + ": rendering post '" + post_obj.title + "'" ) 
         return self.render_template( 'post.html' )
 
     def redirect_to_last_comment(self, request):
@@ -73,6 +74,7 @@ class PostsView(BlogBaseView):
     def render(self, *args):
         posts = Post.objects.all()
         self.Context['posts'] = posts
+        logging.info( "User " + self.Request.user.username + ": rendering posts list" ) 
         return self.render_template( 'posts.html' )
 
 class SubscribeView(BlogBaseView):
