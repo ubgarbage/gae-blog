@@ -5,6 +5,7 @@ import views
 import blog.urls
 import external_auth.urls
 import comment.urls
+import forum.urls
 import testdebug.views
 
 admin.autodiscover()
@@ -18,6 +19,7 @@ urlpatterns = patterns( '',
                         ( r'^comments/', include('django.contrib.comments.urls') ),
                         ( '^comment/', include(comment.urls) ),
                         ( '^blog/', include(blog.urls) ),
+                        ( '^forum/', include(forum.urls) ),
                         ( '^testdebug/', testdebug.views.testdebug1 ), )
 
 

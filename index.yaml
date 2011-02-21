@@ -74,3 +74,8 @@ indexes:
   properties:
   - name: __key__
     direction: desc
+
+- kind: forum_forumpost
+  properties:
+  - name: thread_id
+  - name: created

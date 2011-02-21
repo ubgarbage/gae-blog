@@ -25,6 +25,7 @@ INSTALLED_APPS = (
     'blog',
     'external_auth',
     'comment',
+    'forum',
     'testdebug',
 )
 
