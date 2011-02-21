@@ -38,15 +38,17 @@
             {% for post in posts.object_list %}
                 <div class="post">
 
-                    <div class="ppic">
-                        {% with post.profile_data as pdata %}
-                            {% if pdata.1 %}
-                                <img src="{{ media_url }}{{ pdata.1 }}" /> <br />
-                            {% endif %}
-                        {{ post.creator }}<br />
-                        Сообщений: {{ pdata.0 }}<br />
-                        Зарегистрирован: {{ post.creator.date_joined|date:"M d Y" }}
-                        {% endwith %}
+                  <div class="ppic">
+                    {% comment %}
+                    {% with post.profile_data as pdata %}
+                    {% if pdata.1 %}
+                    <img src="{{ media_url }}{{ pdata.1 }}" /> <br />
+                    {% endif %}
+                    {% endwith %}
+                    {% endcomment %}
+                    {{ post.creator }}<br />
+                    Сообщений: {{ pdata.0 }}<br />
+                    Зарегистрирован: {{ post.creator.date_joined|date:"M d Y" }}
                     </div>
 
                     <span class="title">{{ post.title }}</span><br />

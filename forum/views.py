@@ -89,9 +89,10 @@ def post(request, ptype, pk):
                                                           title=title))
 
 def increment_post_counter(request):
-    profile = request.user.userprofile_set.all()[0]
-    profile.posts += 1
-    profile.save()
+    None
+    # profile = request.user.userprofile_set.all()[0]
+    # profile.posts += 1
+    # profile.save()
 
 @login_required
 def new_thread(request):
