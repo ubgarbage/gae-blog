@@ -20,7 +20,7 @@ class Thread(models.Model):
 
     def last_post(self):
         if self.forumpost_set.count():
-            return self.forumpost_set.order_by("created")[0]
+            return self.forumpost_set.order_by("-created")[0]
 
 
 class ForumPost(models.Model):

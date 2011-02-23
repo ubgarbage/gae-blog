@@ -89,3 +89,9 @@ indexes:
   properties:
   - name: thread_id
   - name: created
+
+- kind: forum_forumpost
+  properties:
+  - name: thread_id
+  - name: created
+    direction: desc
