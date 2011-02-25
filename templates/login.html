@@ -26,6 +26,12 @@
   </form>
   <BR>
   <BR>
+  <form action="/accounts/external/inboxru/login/" method="post">{% csrf_token %}
+    <label for="username">Войти с помощью учетной записи Inbox.Ru: </label>
+    <input type="text" name="username" value="" id="username">@inbox.ru&nbsp&nbsp&nbsp<input type="submit" value="Вход" />
+  </form>
+  <BR>
+  <BR>
   <form action="/accounts/external/yandex/login/" method="post">{% csrf_token %}
     <label for="username">Войти с помощью учетной записи Yandex: </label>
     <input type="text" name="username" value="" id="username">@yandex.ru&nbsp&nbsp&nbsp<input type="submit" value="Вход" />
