@@ -23,20 +23,26 @@ class Post(models.Model):
     def get_absolute_url(self):
         return '/blog/posts/post/' + str(self.id)
 
+    def save(self, *args, **kwargs):
+        notify=False
+        if not self.pk:
+            notify=True
+        super(Post, self).save(args, kwargs)
+        if notify:
+            logging.info( "id=" + str(self.id) + ", pk = " + str(self.pk) )
+            notify_subscribers( self )
+        else:
+            logging.info( 'post changed, we are not going to send notification' )
+
+def notify_subscribers(instance):
+    body = loader.get_template( 'email_new_post.txt' )
+    subj = loader.get_template( 'email_new_post_subj.txt' )
+    send_email_to_subscribers( subj.render( Context({'post':instance}) ), body.render( Context({'post':instance}) ) )
+
 @receiver(pre_save, sender=Post)
 def preview_generator(sender, instance, **kwargs):
     words = instance.content.split(' ')[:20]
     instance.preview = ' '.join(words)
-
-@receiver(pre_save, sender=Post)
-def on_new_post(sender, instance, **kwargs):
-    exist = len(Post.objects.filter( title=instance.title )) != 0
-    if not exist:
-        body = loader.get_template( 'email_new_post.txt' )
-        subj = loader.get_template( 'email_new_post_subj.txt' )
-        send_email_to_subscribers( subj.render( Context({'title':instance.title}) ), body.render( Context({'title':instance.title}) ) )
-    else:
-        logging.info( 'post changed, we are not going to send notification' )
 
 class Subscriber(models.Model):
     user = models.ForeignKey(User, unique=True)
