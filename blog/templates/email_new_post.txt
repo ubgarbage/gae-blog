@@ -1,4 +1,4 @@
 
-В нашем блоге опубликована новая статья - <a href="http://www.fromrussiatous.com{% url blog.views.PostView post.id %}">{{ post.title }}</a>
+В нашем блоге опубликована новая статья - "{{ post.title }}" (http://www.fromrussiatous.com{% url blog.views.PostView post.id %})
 
 Если вы не хотите получать такие уведомленя - перейдите по ссылке: http://fromrussiatous.com/blog/unsubscribe/
