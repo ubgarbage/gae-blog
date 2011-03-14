@@ -29,7 +29,6 @@ class Post(models.Model):
             notify=True
         super(Post, self).save(args, kwargs)
         if notify:
-            logging.info( "id=" + str(self.id) + ", pk = " + str(self.pk) )
             notify_subscribers( self )
         else:
             logging.info( 'post changed, we are not going to send notification' )
