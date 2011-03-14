@@ -77,7 +77,7 @@
   {% for comment in comments %}
   {% if not comment.is_removed %}
   <li>
-    <a href="{% get_comment_permalink comment %}">{{ comment.comment }}<BR/></a>
+    <a href="{% get_comment_permalink comment %}">{{ comment.comment|truncatewords:15 }}<BR/></a>
     <script type="text/javascript">
       document.write( ToLocalFromUtc( {{ comment.submit_date|date:"U" }} * 1000 ) )
     </script>
@@ -92,7 +92,7 @@
 <ul>
   {% for forum_post in forum_posts %}
   <li>
-    <a href="/forum/thread/{{forum_post.thread.id}}/">{{ forum_post.body|truncatewords:15 }}...<BR/></a>
+    <a href="/forum/thread/{{forum_post.thread.id}}/">{{ forum_post.body|truncatewords:15 }}<BR/></a>
     <script type="text/javascript">
       document.write( ToLocalFromUtc( {{ forum_post.created|date:"U" }} * 1000 ) )
     </script>
