@@ -88,4 +88,18 @@
   {% endfor %}
 </ul>
 
+<h2>Последние сообщения форума:</h2>
+<ul>
+  {% for forum_post in forum_posts %}
+  <li>
+    <a href="/forum/thread/{{forum_post.thread.id}}/">{{ forum_post.body|truncatewords:15 }}...<BR/></a>
+    <script type="text/javascript">
+      document.write( ToLocalFromUtc( {{ forum_post.created|date:"U" }} * 1000 ) )
+    </script>
+    <BR/>
+    {{ forum_post.creator }}<BR/>
+  </li>
+  {% endfor %}
+</ul>
+
 {% endblock %}

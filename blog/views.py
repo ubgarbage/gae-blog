@@ -8,7 +8,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
 from utils import get_view_url
 from models import Post, Subscriber
+from forum.models import ForumPost
 import logging
+
 
 @login_required
 def main(request):
@@ -36,8 +38,10 @@ class BlogBaseView:
         self.add_is_subscriber_flag()        
 
     def add_comments(self, context):
-        comments = Comment.objects.order_by('-submit_date')[0:10]
+        comments = Comment.objects.order_by('-submit_date')[0:5]
         context['comments'] = comments
+        forum_posts = ForumPost.objects.order_by('-created')[0:5]
+        context['forum_posts'] = forum_posts
         return context
 
     def add_is_subscriber_flag(self):

@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 from django.db.models.signals import post_save
 
-
 class Thread(models.Model):
     title = models.CharField(max_length=60)
     created = models.DateTimeField(auto_now_add=True)
@@ -37,6 +36,7 @@ class ForumPost(models.Model):
         return u"%s - %s\n%s" % (self.creator, self.title, self.created.strftime("%b %d, %I:%M %p"))
     short.allow_tags = True
 
+    
     # def profile_data(self):
     #     p = self.creator.userprofile_set.all()[0]
     #     return p.posts, p.avatar
