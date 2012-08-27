@@ -5,6 +5,7 @@ import os
 import re
 import mimetypes
 import warnings
+from copy import copy
 try:
     from cStringIO import StringIO
 except ImportError:
@@ -46,7 +47,7 @@ class FakePayload(object):
 
     def read(self, num_bytes=None):
         if num_bytes is None:
-            num_bytes = self.__len or 1
+            num_bytes = self.__len or 0
         assert self.__len >= num_bytes, "Cannot read more than the available bytes from the HTTP incoming data."
         content = self.__content.read(num_bytes)
         self.__len -= num_bytes
@@ -91,9 +92,12 @@ class ClientHandler(BaseHandler):
 def store_rendered_templates(store, signal, sender, template, context, **kwargs):
     """
     Stores templates and contexts that are rendered.
+
+    The context is copied so that it is an accurate representation at the time
+    of rendering.
     """
     store.setdefault('templates', []).append(template)
-    store.setdefault('context', ContextList()).append(context)
+    store.setdefault('context', ContextList()).append(copy(context))
 
 def encode_multipart(boundary, data):
     """
@@ -142,7 +146,10 @@ def encode_multipart(boundary, data):
 
 def encode_file(boundary, key, file):
     to_str = lambda s: smart_str(s, settings.DEFAULT_CHARSET)
-    content_type = mimetypes.guess_type(file.name)[0]
+    if hasattr(file, 'content_type'):
+        content_type = file.content_type
+    else:
+        content_type = mimetypes.guess_type(file.name)[0]
     if content_type is None:
         content_type = 'application/octet-stream'
     return [
@@ -201,16 +208,26 @@ class RequestFactory(object):
 
     def request(self, **request):
         "Construct a generic request object."
-#        return WSGIRequest(self._base_environ(**request))
-#       MY PATCH : adds user object in request mock
-        request = WSGIRequest(self._base_environ(**request))
-        handler = BaseHandler()
-        handler.load_middleware()
-        for middleware_method in handler._request_middleware:
-            if middleware_method(request):
-                raise Exception("Couldn't create request mock object - "
-                                "request middleware returned a response")
-        return request
+        return WSGIRequest(self._base_environ(**request))
+
+    def _encode_data(self, data, content_type, ):
+        if content_type is MULTIPART_CONTENT:
+            return encode_multipart(BOUNDARY, data)
+        else:
+            # Encode the content so that the byte representation is correct.
+            match = CONTENT_TYPE_RE.match(content_type)
+            if match:
+                charset = match.group(1)
+            else:
+                charset = settings.DEFAULT_CHARSET
+            return smart_str(data, encoding=charset)
+
+    def _get_path(self, parsed):
+        # If there are parameters, add them
+        if parsed[3]:
+            return urllib.unquote(parsed[2] + ";" + parsed[3])
+        else:
+            return urllib.unquote(parsed[2])
 
     def get(self, path, data={}, **extra):
         "Construct a GET request"
@@ -218,7 +235,7 @@ class RequestFactory(object):
         parsed = urlparse(path)
         r = {
             'CONTENT_TYPE':    'text/html; charset=utf-8',
-            'PATH_INFO':       urllib.unquote(parsed[2]),
+            'PATH_INFO':       self._get_path(parsed),
             'QUERY_STRING':    urlencode(data, doseq=True) or parsed[4],
             'REQUEST_METHOD': 'GET',
             'wsgi.input':      FakePayload('')
@@ -230,22 +247,13 @@ class RequestFactory(object):
              **extra):
         "Construct a POST request."
 
-        if content_type is MULTIPART_CONTENT:
-            post_data = encode_multipart(BOUNDARY, data)
-        else:
-            # Encode the content so that the byte representation is correct.
-            match = CONTENT_TYPE_RE.match(content_type)
-            if match:
-                charset = match.group(1)
-            else:
-                charset = settings.DEFAULT_CHARSET
-            post_data = smart_str(data, encoding=charset)
+        post_data = self._encode_data(data, content_type)
 
         parsed = urlparse(path)
         r = {
             'CONTENT_LENGTH': len(post_data),
             'CONTENT_TYPE':   content_type,
-            'PATH_INFO':      urllib.unquote(parsed[2]),
+            'PATH_INFO':      self._get_path(parsed),
             'QUERY_STRING':   parsed[4],
             'REQUEST_METHOD': 'POST',
             'wsgi.input':     FakePayload(post_data),
@@ -259,7 +267,7 @@ class RequestFactory(object):
         parsed = urlparse(path)
         r = {
             'CONTENT_TYPE':    'text/html; charset=utf-8',
-            'PATH_INFO':       urllib.unquote(parsed[2]),
+            'PATH_INFO':       self._get_path(parsed),
             'QUERY_STRING':    urlencode(data, doseq=True) or parsed[4],
             'REQUEST_METHOD': 'HEAD',
             'wsgi.input':      FakePayload('')
@@ -272,7 +280,7 @@ class RequestFactory(object):
 
         parsed = urlparse(path)
         r = {
-            'PATH_INFO':       urllib.unquote(parsed[2]),
+            'PATH_INFO':       self._get_path(parsed),
             'QUERY_STRING':    urlencode(data, doseq=True) or parsed[4],
             'REQUEST_METHOD': 'OPTIONS',
             'wsgi.input':      FakePayload('')
@@ -284,25 +292,16 @@ class RequestFactory(object):
             **extra):
         "Construct a PUT request."
 
-        if content_type is MULTIPART_CONTENT:
-            post_data = encode_multipart(BOUNDARY, data)
-        else:
-            post_data = data
-
-        # Make `data` into a querystring only if it's not already a string. If
-        # it is a string, we'll assume that the caller has already encoded it.
-        query_string = None
-        if not isinstance(data, basestring):
-            query_string = urlencode(data, doseq=True)
+        put_data = self._encode_data(data, content_type)
 
         parsed = urlparse(path)
         r = {
-            'CONTENT_LENGTH': len(post_data),
+            'CONTENT_LENGTH': len(put_data),
             'CONTENT_TYPE':   content_type,
-            'PATH_INFO':      urllib.unquote(parsed[2]),
-            'QUERY_STRING':   query_string or parsed[4],
+            'PATH_INFO':      self._get_path(parsed),
+            'QUERY_STRING':   parsed[4],
             'REQUEST_METHOD': 'PUT',
-            'wsgi.input':     FakePayload(post_data),
+            'wsgi.input':     FakePayload(put_data),
         }
         r.update(extra)
         return self.request(**r)
@@ -312,7 +311,7 @@ class RequestFactory(object):
 
         parsed = urlparse(path)
         r = {
-            'PATH_INFO':       urllib.unquote(parsed[2]),
+            'PATH_INFO':       self._get_path(parsed),
             'QUERY_STRING':    urlencode(data, doseq=True) or parsed[4],
             'REQUEST_METHOD': 'DELETE',
             'wsgi.input':      FakePayload('')

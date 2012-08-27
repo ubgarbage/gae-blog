@@ -1,11 +1,15 @@
 "Functions that help with dynamically creating decorators for views."
 
-import types
 try:
     from functools import wraps, update_wrapper, WRAPPER_ASSIGNMENTS
 except ImportError:
     from django.utils.functional import wraps, update_wrapper, WRAPPER_ASSIGNMENTS  # Python 2.4 fallback.
 
+class classonlymethod(classmethod):
+    def __get__(self, instance, owner):
+        if instance is not None:
+            raise AttributeError("This method is available only on the view class.")
+        return super(classonlymethod, self).__get__(instance, owner)
 
 def method_decorator(decorator):
     """
@@ -93,10 +97,17 @@ def make_middleware_decorator(middleware_class):
                         if result is not None:
                             return result
                     raise
-                if hasattr(middleware, 'process_response'):
-                    result = middleware.process_response(request, response)
-                    if result is not None:
-                        return result
+                if hasattr(response, 'render') and callable(response.render):
+                    if hasattr(middleware, 'process_template_response'):
+                        response = middleware.process_template_response(request, response)
+                    # Defer running of process_response until after the template
+                    # has been rendered:
+                    if hasattr(middleware, 'process_response'):
+                        callback = lambda response: middleware.process_response(request, response)
+                        response.add_post_render_callback(callback)
+                else:
+                    if hasattr(middleware, 'process_response'):
+                        return middleware.process_response(request, response)
                 return response
             return wraps(view_func, assigned=available_attrs(view_func))(_wrapped_view)
         return _decorator

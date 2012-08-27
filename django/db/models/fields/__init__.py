@@ -206,8 +206,8 @@ class Field(object):
         #
         # A Field class can implement the get_internal_type() method to specify
         # which *preexisting* Django Field class it's most similar to -- i.e.,
-        # an XMLField is represented by a TEXT column type, which is the same
-        # as the TextField Django field type, which means XMLField's
+        # a custom field might be represented by a TEXT column type, which is the
+        # same as the TextField Django field type, which means the custom field's
         # get_internal_type() returns 'TextField'.
         #
         # But the limitation of the get_internal_type() / data_types approach
@@ -220,10 +220,6 @@ class Field(object):
             return connection.creation.data_types[self.get_internal_type()] % data
         except KeyError:
             return None
-
-    def related_db_type(self, connection):
-        # This is the db_type used by a ForeignKey.
-        return self.db_type(connection=connection)
 
     def unique(self):
         return self._unique or self.primary_key
@@ -452,12 +448,9 @@ class Field(object):
         return getattr(obj, self.attname)
 
 class AutoField(Field):
-    description = _("Integer")
+    description = _("Automatic key")
 
     empty_strings_allowed = False
-    default_error_messages = {
-        'invalid': _(u'This value must be an integer.'),
-    }
     def __init__(self, *args, **kwargs):
         assert kwargs.get('primary_key', False) is True, "%ss must have primary_key=True." % self.__class__.__name__
         kwargs['blank'] = True
@@ -466,29 +459,10 @@ class AutoField(Field):
     def get_internal_type(self):
         return "AutoField"
 
-    def related_db_type(self, connection):
-        data = DictWrapper(self.__dict__, connection.ops.quote_name, "qn_")
-
-        try:
-            return connection.creation.data_types['RelatedAutoField'] % data
-        except KeyError:
-            return IntegerField().db_type(connection=connection)
-
-    def to_python(self, value):
-        if not (value is None or isinstance(value, (basestring, int, long))):
-            raise exceptions.ValidationError(self.error_messages['invalid'])
-        return value
-
     def validate(self, value, model_instance):
         pass
 
-    def get_prep_value(self, value):
-        return value
-
     def get_db_prep_value(self, value, connection, prepared=False):
-        # Casts AutoField into the format expected by the backend
-        if not prepared:
-            value = self.get_prep_value(value)
         return connection.ops.value_to_db_auto(value)
 
     def contribute_to_class(self, cls, name):
@@ -634,8 +608,7 @@ class DateField(Field):
             raise exceptions.ValidationError(msg)
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname)
-        if self.auto_now or (not old_value and self.auto_now_add and add):
+        if self.auto_now or (self.auto_now_add and add):
             value = datetime.date.today()
             setattr(model_instance, self.attname, value)
             return value
@@ -724,8 +697,7 @@ class DateTimeField(DateField):
                     raise exceptions.ValidationError(self.error_messages['invalid'])
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname)
-        if self.auto_now or (not old_value and self.auto_now_add and add):
+        if self.auto_now or (self.auto_now_add and add):
             value = datetime.datetime.now()
             setattr(model_instance, self.attname, value)
             return value
@@ -994,12 +966,6 @@ class NullBooleanField(Field):
 class PositiveIntegerField(IntegerField):
     description = _("Integer")
 
-    def related_db_type(self, connection):
-        if not connection.features.related_fields_match_type:
-            return IntegerField().db_type(connection=connection)
-        return super(PositiveIntegerField, self).related_db_type(
-            connection=connection)
-
     def get_internal_type(self):
         return "PositiveIntegerField"
 
@@ -1010,11 +976,6 @@ class PositiveIntegerField(IntegerField):
 
 class PositiveSmallIntegerField(IntegerField):
     description = _("Integer")
-    def related_db_type(self, connection):
-        if not connection.features.related_fields_match_type:
-            return IntegerField().db_type(connection=connection)
-        return super(PositiveSmallIntegerField, self).related_db_type(
-            connection=connection)
 
     def get_internal_type(self):
         return "PositiveSmallIntegerField"
@@ -1114,8 +1075,7 @@ class TimeField(Field):
                 raise exceptions.ValidationError(self.error_messages['invalid'])
 
     def pre_save(self, model_instance, add):
-        old_value = getattr(model_instance, self.attname)
-        if self.auto_now or (not old_value and self.auto_now_add and add):
+        if self.auto_now or (self.auto_now_add and add):
             value = datetime.datetime.now().time()
             setattr(model_instance, self.attname, value)
             return value
@@ -1147,7 +1107,7 @@ class TimeField(Field):
 class URLField(CharField):
     description = _("URL")
 
-    def __init__(self, verbose_name=None, name=None, verify_exists=True, **kwargs):
+    def __init__(self, verbose_name=None, name=None, verify_exists=False, **kwargs):
         kwargs['max_length'] = kwargs.get('max_length', 200)
         CharField.__init__(self, verbose_name, name, **kwargs)
         self.validators.append(validators.URLValidator(verify_exists=verify_exists))
@@ -1164,6 +1124,9 @@ class XMLField(TextField):
     description = _("XML text")
 
     def __init__(self, verbose_name=None, name=None, schema_path=None, **kwargs):
+        import warnings
+        warnings.warn("Use of XMLField has been deprecated; please use TextField instead.",
+                      DeprecationWarning)
         self.schema_path = schema_path
         Field.__init__(self, verbose_name, name, **kwargs)
 

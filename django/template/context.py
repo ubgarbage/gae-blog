@@ -1,5 +1,7 @@
+from copy import copy
 from django.core.exceptions import ImproperlyConfigured
 from django.utils.importlib import import_module
+from django.http import HttpRequest
 
 # Cache of actual callables.
 _standard_context_processors = None
@@ -14,8 +16,15 @@ class ContextPopException(Exception):
 
 class BaseContext(object):
     def __init__(self, dict_=None):
-        dict_ = dict_ or {}
-        self.dicts = [dict_]
+        self._reset_dicts(dict_)
+
+    def _reset_dicts(self, value=None):
+        self.dicts = [value or {}]
+
+    def __copy__(self):
+        duplicate = copy(super(BaseContext, self))
+        duplicate.dicts = self.dicts[:]
+        return duplicate
 
     def __repr__(self):
         return repr(self.dicts)
@@ -64,6 +73,15 @@ class BaseContext(object):
                 return d[key]
         return otherwise
 
+    def new(self, values=None):
+        """
+        Returns a new context with the same properties, but with only the
+        values given in 'values' stored.
+        """
+        new_context = copy(self)
+        new_context._reset_dicts(values)
+        return new_context
+
 class Context(BaseContext):
     "A stack container for variable context"
     def __init__(self, dict_=None, autoescape=True, current_app=None, use_l10n=None):
@@ -73,8 +91,13 @@ class Context(BaseContext):
         self.render_context = RenderContext()
         super(Context, self).__init__(dict_)
 
+    def __copy__(self):
+        duplicate = super(Context, self).__copy__()
+        duplicate.render_context = copy(self.render_context)
+        return duplicate
+
     def update(self, other_dict):
-        "Like dict.update(). Pushes an entire dictionary's keys and values onto the context."
+        "Pushes other_dict to the stack of dictionaries in the Context"
         if not hasattr(other_dict, '__getitem__'):
             raise TypeError('other_dict must be a mapping (dictionary-like) object.')
         self.dicts.append(other_dict)
