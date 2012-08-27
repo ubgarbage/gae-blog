@@ -1,5 +1,5 @@
-application: simpleblogengine
-version: 3
+application: simpleblogengine-hrd
+version: 1
 runtime: python
 api_version: 1
 
